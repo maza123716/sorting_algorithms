@@ -1,68 +1,21 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "sort.h"
 
 /**
- * partition_h - array partition
- * @array: array to sort
- * @first: first position
- * @last: last position
- * @size: array size
- * Return: int pivot index
+ * main - Entry point
+ *
+ * Return: Always 0
  */
-int partition_h(int *array, int first, int last, size_t size)
+int main(void)
 {
-	int pivot = array[last], i = first - 1, j = last + 1, aux;
+	int array[] = {19, 48, 99, 71, 13, 52, 96, 73, 86, 7};
+	size_t n = sizeof(array) / sizeof(array[0]);
 
-	while (1)
-	{
-		do {
-			i++;
-		} while (array[i] < pivot);
-
-		do {
-			j--;
-		} while (array[j] > pivot);
-
-		if (j < i)
-			return (j);
-		if (array[i] > array[j])
-		{
-			aux = array[i];
-			array[i] = array[j];
-			array[j] = aux;
-			print_array(array, size);
-		}
-	}
-}
-
-/**
- * qsh - sorts an array of integers recursively
- * @array: array to sort
- * @first: first position
- * @last: last position
- * @size: array size
- */
-void qsh(int *array, int first, int last, size_t size)
-{
-	int pivot;
-
-	if (first < last)
-	{
-		pivot = partition_h(array, first, last, size);
-		qsh(array, first, pivot, size);
-		qsh(array, pivot + 1, last, size);
-	}
-}
-
-/**
- * quick_sort_hoare - sorts an array of integers using the Quick
- * sort hoare algorithm  in ascending order
- * @array: array to sort
- * @size: array size
- */
-void quick_sort_hoare(int *array, size_t size)
-{
-	if (!array || size < 2)
-		return;
-
-	qsh(array, 0, size - 1, size);
+	print_array(array, n);
+	printf("\n");
+	quick_sort_hoare(array, n);
+	printf("\n");
+	print_array(array, n);
+	return (0);
 }
