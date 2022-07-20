@@ -1,59 +1,121 @@
 #include "sort.h"
-/**
- * swapme - swap the nodes themselves.
- * @current: pointer.
- * @current_old: pointer.
- * @list: doubly linked list
- */
-void swapme(listint_t *current, listint_t *current_old, listint_t **list)
-{
-	listint_t *temp1 = current->next;
-	listint_t *temp2 = current_old->prev;
 
-	if (temp1 != NULL)
-		temp1->prev = current_old;
-	if (temp2 != NULL)
-		temp2->next = current;
-	current->prev = temp2;
-	current_old->next = temp1;
-	current->next = current_old;
-	current_old->prev = current;
-	if (*list == current_old)
-		*list = current;
-	print_list(*list);
+/**
+ * swap_list - swaps the elements of the list
+ *
+ * @ptr1: first pointer
+ * @ptr2: second pointer
+ * @n: n is 0 for increase, n is 1 for decrease
+ * Return: no return
+ */
+void swap_list(listint_t **ptr1, listint_t **ptr2, int n)
+{
+	listint_t *aux, *tmp;
+
+	aux = *ptr1;
+	tmp = *ptr2;
+
+	aux->next = tmp->next;
+	tmp->prev = aux->prev;
+
+	if (tmp->next)
+		tmp->next->prev = aux;
+
+	if (aux->prev)
+		aux->prev->next = tmp;
+
+	aux->prev = tmp;
+	tmp->next = aux;
+
+	if (n == 0)
+		*ptr1 = tmp;
+	else
+		*ptr2 = aux;
 }
 
 /**
- * cocktail_sort_list - cocktail_sort_list
+ * increase_sort - move the bigger numbers to the end
  *
- * @list: doubly linked list
+ * @ptr: pointer to the bigger number
+ * @limit: limit of the list
+ * @list: list of integers
+ * Return: no return
+ */
+void increase_sort(listint_t **ptr, listint_t **limit, listint_t **list)
+{
+	listint_t *aux;
+
+	aux = *ptr;
+
+	while (aux != *limit && aux->next != *limit)
+	{
+		if (aux->n > aux->next->n)
+		{
+			swap_list(&aux, &(aux->next), 0);
+			if (aux->prev == NULL)
+				*list = aux;
+			print_list(*list);
+		}
+		aux = aux->next;
+	}
+
+	*limit = aux;
+	*ptr = aux;
+}
+
+/**
+ * decrease_sort - moves the smaller numbers to the start
+ *
+ * @ptr: pointer to the smaller number
+ * @limit: limit of the list
+ * @list: list of integers
+ * Return: no return
+ */
+void decrease_sort(listint_t **ptr, listint_t **limit, listint_t **list)
+{
+	listint_t *aux;
+
+	aux = *ptr;
+
+	while (aux != *limit && aux->prev != *limit)
+	{
+		if (aux->n < aux->prev->n)
+		{
+			swap_list(&(aux->prev), &aux, 1);
+			if (aux->prev->prev == NULL)
+				*list = aux->prev;
+			print_list(*list);
+		}
+		aux = aux->prev;
+	}
+
+	*limit = aux;
+	*ptr = aux;
+}
+
+/**
+ * cocktail_sort_list - sorts a doubly linked list
+ * of integers in ascending order using the
+ * Cocktail shaker sort algorithm
+ *
+ * @list: head of the linked list
+ * Return: no return
  */
 void cocktail_sort_list(listint_t **list)
 {
-	listint_t *check = *list, *first = NULL, *last = NULL;
+	listint_t *limit1, *limit2, *ptr;
 
-	if (!list)
+	if (list == NULL)
 		return;
-	if (!(*list))
+
+	if (*list == NULL)
 		return;
-	if (!(*list)->next)
-		return;
+
+	limit1 = limit2 = NULL;
+	ptr = *list;
+
 	do {
-		while (check->next)
-		{
-			if (check->n > check->next->n)
-				swapme(check->next, check, list);
-			else
-				check = check->next;
-		}
-		last = check;
-		while (check->prev != first)
-		{
-			if (check->n < check->prev->n)
-				swapme(check, check->prev, list);
-			else
-				check = check->prev;
-		}
-		first = check;
-	} while (first != last);
+		increase_sort(&ptr, &limit1, list);
+		decrease_sort(&ptr, &limit2, list);
+	} while (limit1 != limit2);
 }
